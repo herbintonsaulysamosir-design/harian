@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koperasi Harian - Solusi Keuangan Mikro Cloud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6', 
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col text-slate-800 antialiased pb-20 md:pb-24">
+
+    <header class="sticky top-0 z-40 bg-white border-b border-slate-100 shadow-sm backdrop-blur-md bg-white/90">
+        <div class="max-w-lg mx-auto md:max-w-4xl px-4 py-3.5 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
+                    <i data-lucide="cloud-lightning" class="w-5.5 h-5.5"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight text-slate-900">Koperasi Harian</h1>
+                    <p class="text-xs text-brand-600 font-semibold tracking-wider uppercase flex items-center gap-1">
+                        Sejahtera Bersama <span id="dbStatusText" class="text-[9px] font-bold text-yellow-600 px-1.5 py-0.5 bg-yellow-50 border border-yellow-200 rounded">Connecting...</span>
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span id="liveClock" class="text-xs bg-slate-100 text-slate-600 font-medium px-2.5 py-1.5 rounded-lg border border-slate-200">
+                    --:--
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-lg mx-auto md:max-w-4xl w-full px-4 pt-4 pb-6 overflow-y-auto">
+        
+        <!-- ================= TAB 1: BERANDA ================= -->
+        <section id="tab-beranda" class="tab-content active space-y-5">
+            <div class="relative bg-gradient-to-br from-brand-600 to-brand-800 text-white rounded-2xl p-5 shadow-xl shadow-brand-600/10 overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="relative z-10">
+                    <p class="text-xs text-brand-100 font-medium">Selamat Datang di Portal Kerja,</p>
+                    <h2 class="text-xl font-bold mt-1">Petugas Lapangan Koperasi</h2>
+                    <div class="mt-4 flex items-center justify-between text-brand-100 border-t border-white/10 pt-3 text-xs">
+                        <span class="flex items-center"><i data-lucide="calendar" class="w-4 h-4 mr-1.5"></i> <span id="currentDateText">Sabtu, 23 Mei 2026</span></span>
+                        <span class="bg-brand-500/50 px-2.5 py-1 rounded-full text-white font-semibold">Cloud Sync Aktif</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-600 p-5 rounded-2xl text-white shadow-md shadow-emerald-500/10">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-emerald-100 font-medium">Kas Koperasi</span>
+                        <span class="p-1.5 bg-white/20 text-white rounded-lg"><i data-lucide="landmark" class="w-5 h-5"></i></span>
+                    </div>
+                    <p id="statKas" class="text-2xl font-extrabold mt-2">Rp 0</p>
+                    <span class="text-[10px] text-emerald-100/90 font-semibold flex items-center mt-1">
+                        <i data-lucide="info" class="w-3.5 h-3.5 mr-1"></i> Dana Siap Salur Lapangan
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-500 font-medium">Total Tabungan</span>
+                            <span class="p-1 bg-brand-50 text-brand-600 rounded-lg"><i data-lucide="piggy-bank" class="w-4 h-4"></i></span>
+                        </div>
+                        <p id="statTabungan" class="text-base font-bold text-slate-900 mt-2">Rp 0</p>
+                        <span class="text-[10px] text-brand-600 font-semibold">Simpanan Anggota</span>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-500 font-medium">Pokok Pinjaman</span>
+                            <span class="p-1 bg-indigo-50 text-indigo-600 rounded-lg"><i data-lucide="coins" class="w-4 h-4"></i></span>
+                        </div>
+                        <p id="statPokokPinjaman" class="text-base font-bold text-slate-900 mt-2">Rp 0</p>
+                        <span class="text-[10px] text-indigo-600 font-semibold">Hanya Modal/Pokok</span>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-500 font-medium">Sisa Tagihan</span>
+                            <span class="p-1 bg-amber-50 text-amber-600 rounded-lg"><i data-lucide="receipt" class="w-4 h-4"></i></span>
+                        </div>
+                        <p id="statPinjaman" class="text-base font-bold text-slate-900 mt-2">Rp 0</p>
+                        <span class="text-[10px] text-amber-600 font-semibold">Pinjaman + Bunga</span>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative group">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-500 font-medium flex items-center">
+                                Target Harian
+                                <span class="ml-1 cursor-help text-slate-400 group-hover:text-brand-500 transition" title="5% dari Pokok Pinjaman per Anggota yang Aktif">
+                                    <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+                                </span>
+                            </span>
+                            <span class="p-1 bg-purple-50 text-purple-600 rounded-lg"><i data-lucide="target" class="w-4 h-4"></i></span>
+                        </div>
+                        <p id="statTarget" class="text-base font-bold text-slate-900 mt-2">Rp 0</p>
+                        <span class="text-[10px] text-purple-600 font-semibold flex items-center">
+                            5% Pokok Aktif
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="text-sm font-bold text-slate-900">Aksi Cepat Harian</h3>
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                    <button onclick="openModalAddMember()" class="flex flex-col items-center justify-center p-3 bg-white border border-slate-100 shadow-sm rounded-xl hover:bg-slate-50 transition active:scale-95 text-center group">
+                        <span class="p-2.5 bg-brand-50 text-brand-600 group-hover:bg-brand-100 rounded-xl transition mb-1.5"><i data-lucide="user-plus" class="w-5 h-5"></i></span>
+                        <span class="text-[10px] text-slate-600 font-semibold leading-tight">+ Anggota</span>
+                    </button>
+                    <button onclick="openModalTransaction('setoran')" class="flex flex-col items-center justify-center p-3 bg-white border border-slate-100 shadow-sm rounded-xl hover:bg-slate-50 transition active:scale-95 text-center group">
+                        <span class="p-2.5 bg-green-50 text-green-600 group-hover:bg-green-100 rounded-xl transition mb-1.5"><i data-lucide="arrow-down-left" class="w-5 h-5"></i></span>
+                        <span class="text-[10px] text-slate-600 font-semibold leading-tight">Setor</span>
+                    </button>
+                    <button onclick="openModalTransaction('angsuran')" class="flex flex-col items-center justify-center p-3 bg-white border border-slate-100 shadow-sm rounded-xl hover:bg-slate-50 transition active:scale-95 text-center group">
+                        <span class="p-2.5 bg-purple-50 text-purple-600 group-hover:bg-purple-100 rounded-xl transition mb-1.5"><i data-lucide="refresh-cw" class="w-5 h-5"></i></span>
+                        <span class="text-[10px] text-slate-600 font-semibold leading-tight">Angsuran</span>
+                    </button>
+                    <button onclick="openModalTransaction('pencairan')" class="flex flex-col items-center justify-center p-3 bg-white border border-slate-100 shadow-sm rounded-xl hover:bg-slate-50 transition active:scale-95 text-center group">
+                        <span class="p-2.5 bg-amber-50 text-amber-600 group-hover:bg-amber-100 rounded-xl transition mb-1.5"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></span>
+                        <span class="text-[10px] text-slate-600 font-semibold leading-tight">Cair Pinjam</span>
+                    </button>
+                    <button onclick="openModalTransaction('suntikan')" class="flex flex-col items-center justify-center p-3 bg-white border border-slate-100 shadow-sm rounded-xl hover:bg-slate-50 transition active:scale-95 text-center group">
+                        <span class="p-2.5 bg-teal-50 text-teal-600 group-hover:bg-teal-100 rounded-xl transition mb-1.5"><i data-lucide="trending-up" class="w-5 h-5"></i></span>
+                        <span class="text-[10px] text-slate-600 font-semibold leading-tight">Suntik Kas</span>
+                    </button>
+                    <button onclick="openModalTransaction('pengeluaran')" class="flex flex-col items-center justify-center p-3 bg-white border border-slate-100 shadow-sm rounded-xl hover:bg-slate-50 transition active:scale-95 text-center group">
+                        <span class="p-2.5 bg-rose-50 text-rose-600 group-hover:bg-rose-100 rounded-xl transition mb-1.5"><i data-lucide="trending-down" class="w-5 h-5"></i></span>
+                        <span class="text-[10px] text-slate-600 font-semibold leading-tight">Pengeluaran</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-sm font-bold text-slate-900">Aktivitas Terkini</h3>
+                    <button onclick="switchTab('transaksi')" class="text-xs font-semibold text-brand-600 hover:text-brand-700">Lihat Semua</button>
+                </div>
+                <div id="recentTransactionsList" class="divide-y divide-slate-100">
+                    <p class="text-xs text-center text-slate-400 py-4">Menghubungkan ke database...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: ANGGOTA ================= -->
+        <section id="tab-anggota" class="tab-content space-y-4">
+            <div class="flex flex-col space-y-3">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">Daftar Anggota</h2>
+                        <p class="text-xs text-slate-500">Kelola simpanan & pinjaman harian anggota</p>
+                    </div>
+                    <button onclick="openModalAddMember()" class="flex items-center space-x-1 px-3 py-2 bg-brand-600 text-white text-xs font-bold rounded-xl shadow-lg shadow-brand-600/10 hover:bg-brand-700 transition active:scale-95">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i>
+                        <span>Tambah Anggota</span>
+                    </button>
+                </div>
+
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </span>
+                    <input id="searchMemberInput" type="text" placeholder="Cari nama atau nomor HP..." oninput="renderMemberList()" class="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition">
+                </div>
+            </div>
+
+            <div id="memberListContainer" class="grid gap-3 grid-cols-1 md:grid-cols-2">
+                <p class="text-xs text-center text-slate-400 col-span-full py-10">Memuat data anggota...</p>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: TRANSAKSI ================= -->
+        <section id="tab-transaksi" class="tab-content space-y-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">Mutasi Transaksi</h2>
+                    <p class="text-xs text-slate-500">Log transaksi masuk dan keluar hari ini</p>
+                </div>
+                <div class="flex space-x-1 bg-slate-200/60 p-1 rounded-xl">
+                    <button onclick="filterTransactionType('semua')" id="btnFilter-semua" class="tx-filter-btn px-2.5 py-1 text-[10px] font-bold rounded-lg bg-white text-brand-600 shadow-xs transition">Semua</button>
+                    <button onclick="filterTransactionType('setoran')" id="btnFilter-setoran" class="tx-filter-btn px-2.5 py-1 text-[10px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition">Setoran</button>
+                    <button onclick="filterTransactionType('angsuran')" id="btnFilter-angsuran" class="tx-filter-btn px-2.5 py-1 text-[10px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition">Angsuran</button>
+                    <button onclick="filterTransactionType('pencairan')" id="btnFilter-pencairan" class="tx-filter-btn px-2.5 py-1 text-[10px] font-bold rounded-lg text-slate-600 hover:text-slate-900 transition">Pencairan</button>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-brand-50 to-indigo-50 p-4 rounded-xl border border-brand-100 flex items-center justify-between">
+                <div class="space-y-1">
+                    <h4 class="text-xs font-bold text-brand-900">Input Transaksi Baru?</h4>
+                    <p class="text-[10px] text-brand-700">Gunakan tombol aksi cepat untuk merekam mutasi keuangan harian.</p>
+                </div>
+                <div class="flex space-x-1.5">
+                    <button onclick="openModalTransaction('setoran')" class="p-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 active:scale-95 transition" title="Setor Tabungan"><i data-lucide="arrow-down-left" class="w-4 h-4"></i></button>
+                    <button onclick="openModalTransaction('angsuran')" class="p-2 bg-purple-600 text-white rounded-lg shadow-sm hover:bg-purple-700 active:scale-95 transition" title="Bayar Angsuran"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                    <button onclick="openModalTransaction('pencairan')" class="p-2 bg-amber-600 text-white rounded-lg shadow-sm hover:bg-amber-700 active:scale-95 transition" title="Cairkan Pinjaman"><i data-lucide="arrow-up-right" class="w-4 h-4"></i></button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div id="transactionHistoryList" class="divide-y divide-slate-100 max-h-[450px] overflow-y-auto">
+                    <p class="text-xs text-center text-slate-400 py-10">Memuat log transaksi...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: LAPORAN ================= -->
+        <section id="tab-laporan" class="tab-content space-y-4">
+            <div>
+                <h2 class="text-lg font-bold text-slate-900">Laporan Keuangan</h2>
+                <p class="text-xs text-slate-500">Kilas ringkasan data finansial koperasi</p>
+            </div>
+
+            <div class="bg-white rounded-xl border border-slate-100 p-4 shadow-sm space-y-3">
+                <h4 class="text-xs font-bold text-slate-600 tracking-wide uppercase">Statistik Kas Hari Ini</h4>
+                <div class="relative h-48 w-full">
+                    <canvas id="financialChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-slate-100 p-4 shadow-sm space-y-3">
+                <h4 class="text-xs font-bold text-slate-600 tracking-wide uppercase">Buku Kas Lapangan</h4>
+                <div class="divide-y divide-slate-100 text-xs">
+                    <div class="flex justify-between py-2.5">
+                        <span class="text-slate-500">Saldo Awal Kas Koperasi</span>
+                        <span class="font-semibold text-slate-800">Rp 10.000.000</span>
+                    </div>
+                    <div class="flex justify-between py-2.5">
+                        <span class="text-green-600 flex items-center"><i data-lucide="arrow-down-left" class="w-3.5 h-3.5 mr-1 text-green-500"></i> Total Setoran Tabungan (+)</span>
+                        <span id="repTotalSetoran" class="font-bold text-green-600">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between py-2.5">
+                        <span class="text-purple-600 flex items-center"><i data-lucide="refresh-cw" class="w-3.5 h-3.5 mr-1 text-purple-500"></i> Total Angsuran Harian (+)</span>
+                        <span id="repTotalAngsuran" class="font-bold text-purple-600">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between py-2.5">
+                        <span class="text-indigo-600 flex items-center"><i data-lucide="percent" class="w-3.5 h-3.5 mr-1 text-indigo-500"></i> Total Pendapatan Admin (+)</span>
+                        <span id="repTotalAdmin" class="font-bold text-indigo-600">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between py-2.5">
+                        <span class="text-teal-600 flex items-center"><i data-lucide="trending-up" class="w-3.5 h-3.5 mr-1 text-teal-500"></i> Total Suntikan Kas (+)</span>
+                        <span id="repTotalSuntikan" class="font-bold text-teal-600">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between py-2.5">
+                        <span class="text-amber-600 flex items-center"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5 mr-1 text-amber-500"></i> Total Pencairan Pinjaman (-)</span>
+                        <span id="repTotalPencairan" class="font-bold text-amber-600">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between py-2.5">
+                        <span class="text-rose-600 flex items-center"><i data-lucide="trending-down" class="w-3.5 h-3.5 mr-1 text-rose-500"></i> Total Pengeluaran Kas (-)</span>
+                        <span id="repTotalPengeluaran" class="font-bold text-rose-600">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between py-3 border-t-2 border-slate-100 text-sm">
+                        <span class="font-bold text-slate-900">Saldo Akhir Hari Ini</span>
+                        <span id="repSaldoAkhir" class="font-extrabold text-brand-600">Rp 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <button onclick="simulateExport()" class="w-full py-3 bg-brand-600 text-white rounded-xl font-bold text-xs shadow-lg shadow-brand-600/15 hover:bg-brand-700 active:scale-95 transition flex items-center justify-center space-x-2">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span>Ekspor Laporan (CSV / PDF)</span>
+                </button>
+                <button onclick="triggerResetAllData()" class="w-full py-3 bg-rose-50 text-rose-600 border border-rose-200 rounded-xl font-bold text-xs hover:bg-rose-100 active:scale-95 transition flex items-center justify-center space-x-2">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <span>Kosongkan Semua Data</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-slate-200 shadow-2xl z-40 max-w-lg mx-auto md:max-w-4xl rounded-t-2xl">
+        <div class="flex justify-around items-center h-16 px-2">
+            <button onclick="switchTab('beranda')" id="nav-beranda" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-brand-600 transition group relative">
+                <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-brand-600 rounded-full opacity-100 transition duration-300" id="indicator-beranda"></div>
+                <i data-lucide="home" class="w-5 h-5 transition group-hover:scale-110"></i>
+                <span class="text-[10px] font-bold mt-1 tracking-wider">Beranda</span>
+            </button>
+            <button onclick="switchTab('anggota')" id="nav-anggota" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-slate-400 transition group relative">
+                <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-brand-600 rounded-full opacity-0 transition duration-300" id="indicator-anggota"></div>
+                <i data-lucide="users" class="w-5 h-5 transition group-hover:scale-110"></i>
+                <span class="text-[10px] font-bold mt-1 tracking-wider">Anggota</span>
+            </button>
+            <button onclick="switchTab('transaksi')" id="nav-transaksi" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-slate-400 transition group relative">
+                <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-brand-600 rounded-full opacity-0 transition duration-300" id="indicator-transaksi"></div>
+                <i data-lucide="arrow-left-right" class="w-5 h-5 transition group-hover:scale-110"></i>
+                <span class="text-[10px] font-bold mt-1 tracking-wider">Transaksi</span>
+            </button>
+            <button onclick="switchTab('laporan')" id="nav-laporan" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-slate-400 transition group relative">
+                <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-brand-600 rounded-full opacity-0 transition duration-300" id="indicator-laporan"></div>
+                <i data-lucide="bar-chart-3" class="w-5 h-5 transition group-hover:scale-110"></i>
+                <span class="text-[10px] font-bold mt-1 tracking-wider">Laporan</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ================= MODALS & POPUPS ================= -->
+    <div id="modalAddMember" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl border border-slate-100 animate-fadeIn">
+            <div class="bg-gradient-to-r from-brand-600 to-brand-700 text-white px-5 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-sm flex items-center"><i data-lucide="user-plus" class="w-4.5 h-4.5 mr-2"></i> Tambah Anggota Baru</h3>
+                <button onclick="closeModalAddMember()" class="text-white/80 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="formAddMember" class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Nama Lengkap *</label>
+                    <input type="text" id="addMemberName" required placeholder="Contoh: Budi Santoso" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">No. WhatsApp/HP *</label>
+                    <input type="number" id="addMemberPhone" required placeholder="Contoh: 0812345678" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Alamat Domisili *</label>
+                    <textarea id="addMemberAddress" rows="2" required placeholder="Alamat lengkap, RT/RW, Kecamatan" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Simpanan Pokok Awal (Rp) *</label>
+                    <input type="number" id="addMemberInitialDeposit" required min="0" step="5000" placeholder="Minimum Rp 0" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition">
+                </div>
+                <div class="flex space-x-2.5 pt-2">
+                    <button type="button" onclick="closeModalAddMember()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">Batal</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-brand-600/10 transition">Simpan Anggota</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalEditMember" class="fixed inset-0 z-55 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl border border-slate-100 animate-fadeIn">
+            <div class="bg-gradient-to-r from-brand-600 to-brand-700 text-white px-5 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-sm flex items-center"><i data-lucide="edit-3" class="w-4.5 h-4.5 mr-2"></i> Edit Data Anggota</h3>
+                <button onclick="closeModalEditMember()" class="text-white/80 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="formEditMember" class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Nama Lengkap *</label>
+                    <input type="text" id="editMemberName" required placeholder="Contoh: Budi Santoso" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">No. WhatsApp/HP *</label>
+                    <input type="number" id="editMemberPhone" required placeholder="Contoh: 0812345678" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Alamat Domisili *</label>
+                    <textarea id="editMemberAddress" rows="2" required placeholder="Alamat lengkap, RT/RW, Kecamatan" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition"></textarea>
+                </div>
+                <div class="flex space-x-2.5 pt-2">
+                    <button type="button" onclick="closeModalEditMember()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">Batal</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-brand-600/10 transition">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalTransaction" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl border border-slate-100 animate-fadeIn">
+            <div id="txHeader" class="bg-gradient-to-r from-green-600 to-green-700 text-white px-5 py-4 flex justify-between items-center">
+                <h3 id="txTitle" class="font-bold text-sm flex items-center">
+                    <i data-lucide="arrow-down-left" id="txTitleIcon" class="w-4.5 h-4.5 mr-2"></i>
+                    <span>Tambah Transaksi</span>
+                </h3>
+                <button onclick="closeModalTransaction()" class="text-white/80 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="formTransaction" class="p-5 space-y-4">
+                <input type="hidden" id="txType">
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Tanggal Transaksi / Pencairan *</label>
+                    <input type="date" id="txDate" required class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition">
+                </div>
+
+                <div id="wrapperMemberSelect">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Pilih Anggota *</label>
+                    <select id="txMemberId" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition">
+                    </select>
+                </div>
+
+                <div id="wrapperDetailKewajiban" class="hidden bg-slate-50 border border-slate-200 p-3 rounded-xl space-y-1.5 text-xs">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Sisa Pinjaman Anggota:</span>
+                        <span id="labelKewajibanPinjaman" class="font-bold text-red-600">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Angsuran Pokok:</span>
+                        <span id="labelAngsuranHarian" class="font-bold text-purple-600">Rp 0</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label id="txLabelNominal" class="block text-xs font-bold text-slate-600 mb-1">Nominal Transaksi (Rp) *</label>
+                    <input type="number" id="txAmount" required min="1000" placeholder="Contoh: 50000" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition">
+                </div>
+
+                <div id="wrapperPencairanSummary" class="hidden bg-blue-50 border border-blue-200 p-3 rounded-xl space-y-1.5 text-xs">
+                    <p class="font-bold text-blue-800 flex items-center"><i data-lucide="calculator" class="w-3.5 h-3.5 mr-1.5"></i> Rincian Pencairan (Potongan 10%)</p>
+                    <div class="flex justify-between text-slate-600">
+                        <span>Nilai Pengajuan (Pokok):</span>
+                        <span id="labelGrossPencairan" class="font-semibold text-slate-800">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600">
+                        <span>Potongan Admin (5%):</span>
+                        <span id="labelPotonganAdmin" class="font-semibold text-rose-600">- Rp 0</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600">
+                        <span>Potongan Tabungan (5%):</span>
+                        <span id="labelPotonganTabungan" class="font-semibold text-rose-600">- Rp 0</span>
+                    </div>
+                    <div class="flex justify-between border-t border-blue-200/50 pt-1.5 font-bold">
+                        <span class="text-blue-900">Total Cair ke Anggota (Net):</span>
+                        <span id="labelNetCair" class="text-blue-700">Rp 0</span>
+                    </div>
+                    <p class="text-[9px] text-blue-600/80 italic font-medium mt-1">Note: Potongan Tabungan otomatis masuk saldo tabungan anggota.</p>
+                </div>
+
+                <div id="wrapperTenorPinjaman" class="hidden space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Pilihan Tempo *</label>
+                        <select id="txTempo" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition">
+                            <option value="harian">Harian</option>
+                            <option value="mingguan">Mingguan</option>
+                            <option value="bulanan">Bulanan</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label id="labelTxTenor" class="block text-xs font-bold text-slate-600 mb-1">Tenor (Hari) *</label>
+                            <input type="number" id="txTenor" min="1" placeholder="Contoh: 30" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Bunga Flat (%) *</label>
+                            <input type="number" id="txInterest" min="0" max="100" step="0.1" value="10" placeholder="Contoh: 10" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Catatan Tambahan (Opsional)</label>
+                    <input type="text" id="txNotes" placeholder="Contoh: Pembayaran tepat waktu" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 outline-none transition">
+                </div>
+
+                <div class="flex space-x-2.5 pt-2">
+                    <button type="button" onclick="closeModalTransaction()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">Batal</button>
+                    <button type="submit" id="txSubmitBtn" class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-brand-600/10 transition">Kirim</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalMemberDetail" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl border border-slate-100 flex flex-col max-h-[85vh]">
+            <div class="bg-brand-600 text-white px-5 py-4 flex justify-between items-center flex-shrink-0">
+                <h3 class="font-bold text-sm flex items-center"><i data-lucide="user" class="w-4.5 h-4.5 mr-2"></i> Kartu Kendali Anggota</h3>
+                <div class="flex items-center space-x-2">
+                    <button onclick="openModalEditMember()" class="text-white/85 hover:text-white p-1 rounded-lg hover:bg-white/10 transition duration-150 flex items-center justify-center" title="Edit Profil Anggota">
+                        <i data-lucide="edit-3" class="w-4.5 h-4.5"></i>
+                    </button>
+                    <button onclick="closeModalMemberDetail()" class="text-white/80 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+            </div>
+            
+            <div class="p-5 space-y-4 overflow-y-auto flex-1">
+                <div class="text-center pb-3 border-b border-slate-100">
+                    <h4 id="detName" class="font-bold text-slate-900 text-base">N/A</h4>
+                    <p id="detPhone" class="text-xs text-slate-500 mt-0.5">0800000000</p>
+                    <p id="detAddress" class="text-[11px] text-slate-400 mt-1 max-w-xs mx-auto">Alamat Anggota</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
+                        <span class="text-[10px] text-slate-500 font-semibold uppercase tracking-wide block">Saldo Tabungan</span>
+                        <span id="detSavings" class="text-xs font-bold text-green-600 mt-1 block">Rp 0</span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
+                        <span class="text-[10px] text-slate-500 font-semibold uppercase tracking-wide block">Sisa Pinjaman</span>
+                        <span id="detLoanOutstanding" class="text-xs font-bold text-red-600 mt-1 block">Rp 0</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 space-y-2">
+                    <label class="block text-[10px] text-slate-500 font-bold uppercase tracking-wide">Tanda Keanggotaan (Manual)</label>
+                    <select id="detStatusSelect" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-brand-500 outline-none transition">
+                        <option value="lancar">🟢 Lancar</option>
+                        <option value="berjalan">🔵 Berjalan</option>
+                        <option value="macet">🔴 Macet</option>
+                    </select>
+                </div>
+
+                <div id="detLoanDetailSection" class="bg-amber-50/50 border border-amber-100 rounded-xl p-3.5 space-y-2 text-xs">
+                    <p class="font-bold text-amber-800 flex items-center"><i data-lucide="info" class="w-3.5 h-3.5 mr-1.5"></i> Informasi Pinjaman Aktif</p>
+                    <div class="divide-y divide-amber-100">
+                        <div class="flex justify-between py-1.5">
+                            <span class="text-slate-500">Tanggal Pencairan:</span>
+                            <span id="detLoanDate" class="font-semibold text-slate-800">N/A</span>
+                        </div>
+                        <div class="flex justify-between py-1.5">
+                            <span class="text-slate-500">Plafon Pinjaman + Bunga:</span>
+                            <span id="detLoanTotal" class="font-semibold text-slate-800">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between py-1.5">
+                            <span class="text-slate-500">Sudah Dibayarkan:</span>
+                            <span id="detLoanPaid" class="font-semibold text-green-600">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between py-1.5">
+                            <span class="text-slate-500">Bunga Pinjaman (Flat):</span>
+                            <span id="detLoanInterest" class="font-semibold text-slate-800">0%</span>
+                        </div>
+                        <div class="flex justify-between py-1.5">
+                            <span class="text-slate-500">Sisa Tenor:</span>
+                            <span id="detLoanRemainingTenor" class="font-bold text-amber-700">0 / 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <h5 class="text-xs font-bold text-slate-600 tracking-wide uppercase">Histori Mutasi</h5>
+                    <div id="detMutasiList" class="divide-y divide-slate-100 border border-slate-100 rounded-xl overflow-hidden text-xs bg-white">
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex-shrink-0 flex space-x-2">
+                <button onclick="triggerDeleteMember()" class="flex-1 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <span>Hapus Anggota</span>
+                </button>
+                <button onclick="closeModalMemberDetail()" class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold transition">Tutup Kartu</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalConfirmDelete" class="fixed inset-0 z-55 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl w-full max-w-xs overflow-hidden shadow-2xl border border-slate-100 p-5 space-y-4 animate-fadeIn">
+            <div class="text-center space-y-2">
+                <span class="inline-flex p-3 bg-rose-50 text-rose-600 rounded-full"><i data-lucide="trash-2" class="w-6 h-6"></i></span>
+                <h3 class="font-bold text-sm text-slate-900">Hapus Anggota?</h3>
+                <p id="confirmDeleteMessage" class="text-[11px] text-slate-500 leading-relaxed">Apakah Anda yakin ingin menghapus data anggota beserta seluruh histori transaksi terkait?</p>
+            </div>
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closeModalConfirmDelete()" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">Batal</button>
+                <button onclick="executeDeleteMember()" class="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalConfirmResetAll" class="fixed inset-0 z-55 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl w-full max-w-xs overflow-hidden shadow-2xl border border-slate-100 p-5 space-y-4 animate-fadeIn">
+            <div class="text-center space-y-2">
+                <span class="inline-flex p-3 bg-red-100 text-red-600 rounded-full"><i data-lucide="alert-triangle" class="w-6 h-6"></i></span>
+                <h3 class="font-bold text-sm text-slate-900">Kosongkan Semua Data?</h3>
+                <p class="text-[11px] text-slate-500 leading-relaxed">Tindakan ini akan menghapus semua daftar anggota, tabungan, sisa tagihan pinjaman, dan semua transaksi secara permanen dari server database Cloud!</p>
+            </div>
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closeModalConfirmResetAll()" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">Batal</button>
+                <button onclick="executeResetAllData()" class="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition">Kosongkan</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastNotification" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none max-w-sm w-full px-4">
+        <div class="bg-slate-900/95 backdrop-blur-md text-white px-4 py-3.5 rounded-xl shadow-xl flex items-center space-x-3 text-xs font-medium">
+            <span id="toastIconWrapper" class="p-1 rounded-lg">
+            </span>
+            <span id="toastMessage" class="flex-1">Pesan notifikasi sukses.</span>
+        </div>
+    </div>
+
+    <!-- ================= SISTEM SCRIPT / LOGIKA BISNIS CLOUD ================= -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Konfigurasi Firebase dari Konsol Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyC2pn2ZTbyi3ozohf2FK6333qndqztENOk",
+            authDomain: "koperasi-harian.firebaseapp.com",
+            projectId: "koperasi-harian",
+            storageBucket: "koperasi-harian.firebasestorage.app",
+            messagingSenderId: "751486847967",
+            appId: "1:751486847967:web:2e71a154af15c97b26d26a",
+            measurementId: "G-5Q8FRWPK0P"
+        };
+
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const KAS_AWAL = 10000000; // Modal Awal Operasional Rp 10.000.000
+
+        // Menentukan ID Aplikasi untuk mengisolasi path data di Firestore (Aturan Atribusi Premium)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'koperasi-harian-app';
+
+        let state = {
+            members: [],
+            transactions: [],
+            activeTab: 'beranda',
+            currentMemberSelected: null,
+            txFilter: 'semua'
+        };
+
+        // State listeners pembatalan sinkronisasi
+        let unsubMembers = null;
+        let unsubTransactions = null;
+
+        async function initializeDatabaseSync() {
+            try {
+                updateSyncStatusIndicator("Koneksi...", "yellow");
+                
+                let userCredential;
+                // Mencoba autentikasi dengan custom token jika ada, dengan fallback ke anonymous auth jika gagal
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    try {
+                        userCredential = await signInWithCustomToken(auth, __initial_auth_token);
+                        console.log("Autentikasi menggunakan custom token berhasil.");
+                    } catch (tokenError) {
+                        console.warn("Gagal masuk dengan custom token. Mengalihkan ke login anonim:", tokenError);
+                        userCredential = await signInAnonymously(auth);
+                    }
+                } else {
+                    userCredential = await signInAnonymously(auth);
+                }
+                
+                updateSyncStatusIndicator("Terhubung", "green");
+                bindRealtimeFirestoreCollections();
+            } catch (error) {
+                console.error("Firebase Auth Error:", error);
+                updateSyncStatusIndicator("Error Koneksi", "red");
+                showToast("Koneksi Database Gagal. Berjalan offline sementara.", "error");
+            }
+        }
+
+        function bindRealtimeFirestoreCollections() {
+            // Path Koleksi Aman Sesuai Aturan: /artifacts/{appId}/public/data/{collectionName}
+            const membersCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'members');
+            const txCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'transactions');
+
+            // Listeners real-time
+            unsubMembers = onSnapshot(membersCollRef, (snapshot) => {
+                const fetchedMembers = [];
+                snapshot.forEach((docSnap) => {
+                    fetchedMembers.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                state.members = fetchedMembers;
+                renderAll();
+                
+                if (state.currentMemberSelected) {
+                    populateMemberDetail(state.currentMemberSelected);
+                }
+                
+                updateSyncStatusIndicator("Sinkron 🟢", "green");
+            }, (error) => {
+                console.error("Firestore Members Snapshot Error:", error);
+                updateSyncStatusIndicator("Error Sync", "red");
+            });
+
+            unsubTransactions = onSnapshot(txCollRef, (snapshot) => {
+                const fetchedTx = [];
+                snapshot.forEach((docSnap) => {
+                    fetchedTx.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                state.transactions = fetchedTx;
+                renderAll();
+                updateSyncStatusIndicator("Sinkron 🟢", "green");
+            }, (error) => {
+                console.error("Firestore Transaction Snapshot Error:", error);
+                updateSyncStatusIndicator("Error Sync", "red");
+            });
+        }
+
+        function updateSyncStatusIndicator(text, color) {
+            const el = document.getElementById('dbStatusText');
+            if (!el) return;
+            el.innerText = text;
+            el.className = "text-[9px] font-bold px-1.5 py-0.5 rounded border uppercase transition-colors duration-200 ";
+            if (color === 'green') {
+                el.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
+            } else if (color === 'yellow') {
+                el.classList.add('bg-amber-50', 'text-amber-700', 'border-amber-200');
+            } else {
+                el.classList.add('bg-red-50', 'text-red-700', 'border-red-200');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            updateLiveClock();
+            setInterval(updateLiveClock, 1000);
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDateText').innerText = new Date().toLocaleDateString('id-ID', options);
+
+            initializeDatabaseSync();
+            renderAll();
+        });
+
+        function updateLiveClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const clockEl = document.getElementById('liveClock');
+            if (clockEl) clockEl.innerText = timeStr;
+        }
+
+        function switchTab(tabId) {
+            state.activeTab = tabId;
+            
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.add('text-slate-400');
+                btn.classList.remove('text-brand-600');
+            });
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('text-brand-600');
+            }
+
+            document.querySelectorAll('[id^="indicator-"]').forEach(ind => {
+                ind.classList.remove('opacity-100');
+                ind.classList.add('opacity-0');
+            });
+            const activeInd = document.getElementById(`indicator-${tabId}`);
+            if (activeInd) {
+                activeInd.classList.remove('opacity-0');
+                activeInd.classList.add('opacity-100');
+            }
+
+            if (tabId === 'laporan') {
+                setTimeout(initializeChart, 100);
+            }
+
+            renderAll();
+        }
+
+        function calculateStats() {
+            let totalSavings = 0;
+            let totalOutstanding = 0; 
+            let totalPrincipalOutstanding = 0; 
+            let totalSetoranHariIni = 0;
+            let totalAngsuranHariIni = 0;
+            let totalPencairanHariIni = 0;
+            let totalAdminHariIni = 0; 
+            let totalSuntikanHariIni = 0;
+            let totalPengeluaranHariIni = 0;
+
+            state.members.forEach(m => {
+                totalSavings += parseFloat(m.savings || 0);
+                totalOutstanding += parseFloat(m.loanOutstanding || 0);
+
+                if (parseFloat(m.loanOutstanding) > 0) {
+                    const interestRate = parseFloat(m.loanInterest || 0);
+                    const principalOutstanding = parseFloat(m.loanOutstanding) / (1 + (interestRate / 100));
+                    totalPrincipalOutstanding += principalOutstanding;
+                }
+            });
+
+            state.transactions.forEach(tx => {
+                const amount = parseFloat(tx.amount || 0);
+                if (tx.type === 'setoran') {
+                    totalSetoranHariIni += amount;
+                } else if (tx.type === 'angsuran') {
+                    totalAngsuranHariIni += amount;
+                } else if (tx.type === 'pencairan') {
+                    totalPencairanHariIni += amount;
+                } else if (tx.type === 'admin') {
+                    totalAdminHariIni += amount;
+                } else if (tx.type === 'suntikan') {
+                    totalSuntikanHariIni += amount;
+                } else if (tx.type === 'pengeluaran') {
+                    totalPengeluaranHariIni += amount;
+                }
+            });
+
+            const totalKas = KAS_AWAL + totalSetoranHariIni + totalAngsuranHariIni + totalAdminHariIni + totalSuntikanHariIni - totalPencairanHariIni - totalPengeluaranHariIni;
+            
+            let targetHarian = 0;
+            state.members.forEach(m => {
+                if (m.loanOutstanding > 0) {
+                    targetHarian += parseFloat(m.loanPrincipal || 0) * 0.05;
+                }
+            });
+
+            return {
+                kas: totalKas,
+                savings: totalSavings,
+                outstanding: totalOutstanding,
+                principalOutstanding: totalPrincipalOutstanding,
+                target: targetHarian,
+                setoranHariIni: totalSetoranHariIni,
+                angsuranHariIni: totalAngsuranHariIni,
+                pencairanHariIni: totalPencairanHariIni,
+                adminHariIni: totalAdminHariIni,
+                suntikanHariIni: totalSuntikanHariIni,
+                pengeluaranHariIni: totalPengeluaranHariIni
+            };
+        }
+
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number || 0);
+        }
+
+        function renderAll() {
+            const stats = calculateStats();
+
+            const statKasEl = document.getElementById('statKas');
+            if (statKasEl) statKasEl.innerText = formatRupiah(stats.kas);
+            
+            const statTabSavingsEl = document.getElementById('statTabungan');
+            if (statTabSavingsEl) statTabSavingsEl.innerText = formatRupiah(stats.savings);
+            
+            const statOutstandingEl = document.getElementById('statPinjaman');
+            if (statOutstandingEl) statOutstandingEl.innerText = formatRupiah(stats.outstanding);
+            
+            const statPrincipalEl = document.getElementById('statPokokPinjaman');
+            if (statPrincipalEl) statPrincipalEl.innerText = formatRupiah(stats.principalOutstanding);
+            
+            const statTargetEl = document.getElementById('statTarget');
+            if (statTargetEl) statTargetEl.innerText = formatRupiah(stats.target);
+
+            const repSetoranEl = document.getElementById('repTotalSetoran');
+            if (repSetoranEl) repSetoranEl.innerText = formatRupiah(stats.setoranHariIni);
+            
+            const repAngsuranEl = document.getElementById('repTotalAngsuran');
+            if (repAngsuranEl) repAngsuranEl.innerText = formatRupiah(stats.angsuranHariIni);
+            
+            const repAdminEl = document.getElementById('repTotalAdmin');
+            if (repAdminEl) repAdminEl.innerText = formatRupiah(stats.adminHariIni);
+            
+            const repSuntikanEl = document.getElementById('repTotalSuntikan');
+            if (repSuntikanEl) repSuntikanEl.innerText = formatRupiah(stats.suntikanHariIni);
+            
+            const repPencairanEl = document.getElementById('repTotalPencairan');
+            if (repPencairanEl) repPencairanEl.innerText = formatRupiah(stats.pencairanHariIni);
+            
+            const repPengeluaranEl = document.getElementById('repTotalPengeluaran');
+            if (repPengeluaranEl) repPengeluaranEl.innerText = formatRupiah(stats.pengeluaranHariIni);
+            
+            const repSaldoAkhirEl = document.getElementById('repSaldoAkhir');
+            if (repSaldoAkhirEl) repSaldoAkhirEl.innerText = formatRupiah(stats.kas);
+
+            renderRecentTransactions();
+            renderMemberList();
+            renderTransactionHistory();
+            populateMemberDropdown();
+            
+            lucide.createIcons();
+        }
+
+        function renderRecentTransactions() {
+            const container = document.getElementById('recentTransactionsList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const recents = [...state.transactions]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+
+            if (recents.length === 0) {
+                container.innerHTML = `<p class="text-xs text-center text-slate-400 py-4">Belum ada transaksi di database cloud.</p>`;
+                return;
+            }
+
+            recents.forEach(tx => {
+                const member = tx.memberId === 'koperasi' ? { name: 'Kas Koperasi' } : (state.members.find(m => m.id === tx.memberId) || { name: 'Anggota' });
+                let typeBadge = '';
+                let sign = '';
+
+                if (tx.type === 'setoran') {
+                    typeBadge = `<span class="bg-green-50 text-green-600 p-1.5 rounded-lg"><i data-lucide="arrow-down-left" class="w-4 h-4"></i></span>`;
+                    sign = `<span class="text-green-600 font-bold text-xs">+ ${formatRupiah(tx.amount)}</span>`;
+                } else if (tx.type === 'angsuran') {
+                    typeBadge = `<span class="bg-purple-50 text-purple-600 p-1.5 rounded-lg"><i data-lucide="refresh-cw" class="w-4 h-4"></i></span>`;
+                    sign = `<span class="text-purple-600 font-bold text-xs">+ ${formatRupiah(tx.amount)}</span>`;
+                } else if (tx.type === 'pencairan') {
+                    typeBadge = `<span class="bg-amber-50 text-amber-600 p-1.5 rounded-lg"><i data-lucide="arrow-up-right" class="w-4 h-4"></i></span>`;
+                    sign = `<span class="text-amber-600 font-bold text-xs">- ${formatRupiah(tx.amount)}</span>`;
+                } else if (tx.type === 'admin') {
+                    typeBadge = `<span class="bg-indigo-50 text-indigo-600 p-1.5 rounded-lg"><i data-lucide="percent" class="w-4 h-4"></i></span>`;
+                    sign = `<span class="text-indigo-600 font-bold text-xs">+ ${formatRupiah(tx.amount)}</span>`;
+                } else if (tx.type === 'suntikan') {
+                    typeBadge = `<span class="bg-teal-50 text-teal-600 p-1.5 rounded-lg"><i data-lucide="trending-up" class="w-4 h-4"></i></span>`;
+                    sign = `<span class="text-teal-600 font-bold text-xs">+ ${formatRupiah(tx.amount)}</span>`;
+                } else if (tx.type === 'pengeluaran') {
+                    typeBadge = `<span class="bg-rose-50 text-rose-600 p-1.5 rounded-lg"><i data-lucide="trending-down" class="w-4 h-4"></i></span>`;
+                    sign = `<span class="text-rose-600 font-bold text-xs">- ${formatRupiah(tx.amount)}</span>`;
+                }
+
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between py-3';
+                item.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        ${typeBadge}
+                        <div>
+                            <p class="text-xs font-bold text-slate-900">${member.name}</p>
+                            <p class="text-[10px] text-slate-400">${new Date(tx.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} • ${tx.notes || tx.type}</p>
+                        </div>
+                    </div>
+                    ${sign}
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function renderMemberList() {
+            const container = document.getElementById('memberListContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const searchInput = document.getElementById('searchMemberInput');
+            const keyword = searchInput ? searchInput.value.toLowerCase() : '';
+            const filtered = state.members.filter(m => 
+                (m.name && m.name.toLowerCase().includes(keyword)) || 
+                (m.phone && m.phone.includes(keyword))
+            );
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-10 text-center text-slate-400">
+                        <i data-lucide="users" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
+                        <p class="text-xs">Tidak ada anggota terdaftar di cloud</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            filtered.forEach(m => {
+                const hasLoan = m.loanOutstanding > 0;
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition cursor-pointer active:scale-[0.98]";
+                card.onclick = () => openModalMemberDetail(m.id);
+                
+                const tempoLabel = m.loanTempo === 'harian' ? 'Hari' : m.loanTempo === 'mingguan' ? 'Mgg' : m.loanTempo === 'bulanan' ? 'Bln' : '';
+                const sisaTenorTeks = hasLoan ? `${m.loanRemainingTenor !== undefined ? m.loanRemainingTenor : m.loanTenor} ${tempoLabel}` : '-';
+
+                const status = m.status || (hasLoan ? 'berjalan' : 'lancar');
+                let statusBadge = '';
+                if (status === 'lancar') {
+                    statusBadge = `<span class="bg-emerald-50 text-emerald-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full border border-emerald-200 uppercase tracking-wide">🟢 Lancar</span>`;
+                } else if (status === 'berjalan') {
+                    statusBadge = `<span class="bg-blue-50 text-blue-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full border border-blue-200 uppercase tracking-wide">🔵 Berjalan</span>`;
+                } else if (status === 'macet') {
+                    statusBadge = `<span class="bg-rose-50 text-rose-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full border border-rose-200 uppercase tracking-wide">🔴 Macet</span>`;
+                }
+
+                const tglPinjamText = (hasLoan && m.loanDate) ? 
+                    `<p class="text-[10px] text-slate-500 flex items-center mt-1"><i data-lucide="calendar" class="w-3.5 h-3.5 mr-1 text-slate-400"></i> Pinjam: ${new Date(m.loanDate).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'})}</p>` : '';
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-950">${m.name}</h4>
+                            <p class="text-[10px] text-slate-400 flex items-center mt-0.5"><i data-lucide="phone" class="w-3 h-3 mr-1"></i> ${m.phone}</p>
+                            ${tglPinjamText}
+                        </div>
+                        <div class="flex flex-col items-end space-y-1">
+                            ${statusBadge}
+                            ${hasLoan ? 
+                                `<span class="bg-amber-50 text-amber-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full border border-amber-200 uppercase tracking-wide">Aktif</span>` : 
+                                `<span class="bg-slate-100 text-slate-500 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">Lunas</span>`
+                            }
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1 mt-4 pt-3 border-t border-slate-100 text-xs">
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">Tabungan</span>
+                            <span class="font-bold text-green-600 block mt-0.5 text-ellipsis overflow-hidden whitespace-nowrap">${formatRupiah(m.savings)}</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">Sisa Tagihan</span>
+                            <span class="font-bold text-slate-800 block mt-0.5 text-ellipsis overflow-hidden whitespace-nowrap">${hasLoan ? formatRupiah(m.loanOutstanding) : '-'}</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">Sisa Tenor</span>
+                            <span class="font-bold text-amber-600 block mt-0.5 whitespace-nowrap">${sisaTenorTeks}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function renderTransactionHistory() {
+            const container = document.getElementById('transactionHistoryList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let filtered = [...state.transactions];
+            if (state.txFilter !== 'semua') {
+                filtered = filtered.filter(tx => tx.type === state.txFilter);
+            }
+
+            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="py-10 text-center text-slate-400">
+                        <i data-lucide="receipt" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
+                        <p class="text-xs">Tidak ada log transaksi.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            filtered.forEach(tx => {
+                const member = tx.memberId === 'koperasi' ? { name: 'Koperasi (Kas Internal)' } : (state.members.find(m => m.id === tx.memberId) || { name: 'Anggota Dihapus' });
+                let colorClass = '';
+                let icon = '';
+                let descType = '';
+
+                if (tx.type === 'setoran') {
+                    colorClass = 'text-green-600 bg-green-50 border-green-200';
+                    icon = 'arrow-down-left';
+                    descType = 'Setoran Tabungan';
+                } else if (tx.type === 'angsuran') {
+                    colorClass = 'text-purple-600 bg-purple-50 border-purple-200';
+                    icon = 'refresh-cw';
+                    descType = 'Angsuran';
+                } else if (tx.type === 'pencairan') {
+                    colorClass = 'text-amber-600 bg-amber-50 border-amber-200';
+                    icon = 'arrow-up-right';
+                    descType = 'Pencairan Pinjaman';
+                } else if (tx.type === 'admin') {
+                    colorClass = 'text-indigo-600 bg-indigo-50 border-indigo-200';
+                    icon = 'percent';
+                    descType = 'Biaya Administrasi';
+                } else if (tx.type === 'suntikan') {
+                    colorClass = 'text-teal-600 bg-teal-50 border-teal-200';
+                    icon = 'trending-up';
+                    descType = 'Suntikan Kas';
+                } else if (tx.type === 'pengeluaran') {
+                    colorClass = 'text-rose-600 bg-rose-50 border-rose-200';
+                    icon = 'trending-down';
+                    descType = 'Pengeluaran Kas';
+                }
+
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between p-4 hover:bg-slate-50/50 transition';
+                item.innerHTML = `
+                    <div class="flex items-center space-x-3.5">
+                        <div class="w-9 h-9 flex items-center justify-center rounded-xl border ${colorClass}">
+                            <i data-lucide="${icon}" class="w-4.5 h-4.5"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-xs text-slate-900">${member.name}</span>
+                                <span class="text-[9px] font-medium text-slate-400 px-1.5 py-0.5 bg-slate-100 rounded-md uppercase">${descType}</span>
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-1">${new Date(tx.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })} • ${new Date(tx.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
+                            ${tx.notes ? `<p class="text-[10px] text-slate-500 italic mt-0.5">"${tx.notes}"</p>` : ''}
+                        </div>
+                    </div>
+                    <span class="font-extrabold text-xs ${(tx.type === 'pencairan' || tx.type === 'pengeluaran') ? 'text-slate-800' : 'text-slate-950'}">
+                        ${(tx.type === 'pencairan' || tx.type === 'pengeluaran') ? '-' : '+'} ${formatRupiah(tx.amount)}
+                    </span>
+                `;
+                container.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        function filterTransactionType(type) {
+            state.txFilter = type;
+            document.querySelectorAll('.tx-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-brand-600', 'shadow-xs');
+                btn.classList.add('text-slate-600');
+            });
+
+            const activeBtn = document.getElementById(`btnFilter-${type}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-600');
+                activeBtn.classList.add('bg-white', 'text-brand-600', 'shadow-xs');
+            }
+
+            renderTransactionHistory();
+        }
+
+        function populateMemberDropdown() {
+            const select = document.getElementById('txMemberId');
+            if (!select) return;
+            select.innerHTML = '<option value="" disabled selected>-- Pilih Anggota --</option>';
+
+            state.members.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                opt.innerText = `${m.name} (${m.phone})`;
+                select.appendChild(opt);
+            });
+        }
+
+        // Event listener rincian form tempo & tenor
+        const txTempoSelect = document.getElementById('txTempo');
+        if (txTempoSelect) {
+            txTempoSelect.addEventListener('change', (e) => {
+                const tempo = e.target.value;
+                const label = document.getElementById('labelTxTenor');
+                const input = document.getElementById('txTenor');
+                if (!label || !input) return;
+                
+                if (tempo === 'harian') {
+                    label.innerText = "Tenor (Hari) *";
+                    input.placeholder = "Contoh: 30";
+                } else if (tempo === 'mingguan') {
+                    label.innerText = "Tenor (Minggu) *";
+                    input.placeholder = "Contoh: 4";
+                } else if (tempo === 'bulanan') {
+                    label.innerText = "Tenor (Bulan) *";
+                    input.placeholder = "Contoh: 6";
+                }
+            });
+        }
+
+        // Event listener rincian kewajiban anggota saat diangsur
+        const txMemberSelect = document.getElementById('txMemberId');
+        if (txMemberSelect) {
+            txMemberSelect.addEventListener('change', (e) => {
+                const memberId = e.target.value;
+                const txType = document.getElementById('txType').value;
+                const wrapper = document.getElementById('wrapperDetailKewajiban');
+
+                if (txType === 'angsuran' && memberId) {
+                    const member = state.members.find(m => m.id === memberId);
+                    if (member && member.loanOutstanding > 0) {
+                        wrapper.classList.remove('hidden');
+                        document.getElementById('labelKewajibanPinjaman').innerText = formatRupiah(member.loanOutstanding);
+                        
+                        const labelInstallmentText = document.querySelector('#wrapperDetailKewajiban span:nth-child(1)');
+                        const tempoUnit = member.loanTempo || 'harian';
+                        const tenorCount = member.loanTenor || 30;
+                        
+                        let labelText = "Angsuran Pokok:";
+                        if (tempoUnit === 'mingguan') {
+                            labelText = "Angsuran Mingguan Pokok:";
+                        } else if (tempoUnit === 'bulanan') {
+                            labelText = "Angsuran Bulanan Pokok:";
+                        }
+                        
+                        if (labelInstallmentText) {
+                            labelInstallmentText.innerText = labelText;
+                        }
+
+                        const estimasiTagihan = Math.round((member.loanTotal / tenorCount) / 1000) * 1000;
+                        document.getElementById('labelAngsuranHarian').innerText = formatRupiah(estimasiTagihan);
+                    } else {
+                        wrapper.classList.add('hidden');
+                    }
+                } else {
+                    wrapper.classList.add('hidden');
+                }
+            });
+        }
+
+        // Live Kalkulator Potongan Form Pencairan
+        const txAmountInput = document.getElementById('txAmount');
+        if (txAmountInput) {
+            txAmountInput.addEventListener('input', updateLivePencairanSummary);
+        }
+
+        function updateLivePencairanSummary() {
+            const amountInput = document.getElementById('txAmount');
+            if (!amountInput) return;
+            const amount = parseFloat(amountInput.value) || 0;
+            const txType = document.getElementById('txType').value;
+            const summaryBox = document.getElementById('wrapperPencairanSummary');
+
+            if (txType === 'pencairan' && amount > 0) {
+                summaryBox.classList.remove('hidden');
+                
+                const adminFee = amount * 0.05;
+                const savingsFee = amount * 0.05;
+                const netDisbursed = amount - adminFee - savingsFee;
+
+                document.getElementById('labelGrossPencairan').innerText = formatRupiah(amount);
+                document.getElementById('labelPotonganAdmin').innerText = "- " + formatRupiah(adminFee);
+                document.getElementById('labelPotonganTabungan').innerText = "- " + formatRupiah(savingsFee);
+                document.getElementById('labelNetCair').innerText = formatRupiah(netDisbursed);
+            } else {
+                summaryBox.classList.add('hidden');
+            }
+        }
+
+        function openModalAddMember() {
+            document.getElementById('modalAddMember').classList.remove('hidden');
+        }
+
+        function closeModalAddMember() {
+            document.getElementById('modalAddMember').classList.add('hidden');
+            document.getElementById('addMemberName').value = '';
+            document.getElementById('addMemberPhone').value = '';
+            document.getElementById('addMemberAddress').value = '';
+            document.getElementById('addMemberInitialDeposit').value = '';
+        }
+
+        function openModalTransaction(type) {
+            const modal = document.getElementById('modalTransaction');
+            const header = document.getElementById('txHeader');
+            const title = document.getElementById('txTitle');
+            const labelNominal = document.getElementById('txLabelNominal');
+            const tenorWrapper = document.getElementById('wrapperTenorPinjaman');
+            const submitBtn = document.getElementById('txSubmitBtn');
+            const memberSelectWrapper = document.getElementById('wrapperMemberSelect');
+
+            document.getElementById('txType').value = type;
+            document.getElementById('wrapperDetailKewajiban').classList.add('hidden');
+            document.getElementById('wrapperPencairanSummary').classList.add('hidden');
+            tenorWrapper.classList.add('hidden');
+            document.getElementById('txTenor').required = false;
+
+            document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('txTempo').value = 'harian';
+            document.getElementById('labelTxTenor').innerText = "Tenor (Hari) *";
+            document.getElementById('txTenor').placeholder = "Contoh: 30";
+
+            if (type === 'suntikan' || type === 'pengeluaran') {
+                memberSelectWrapper.classList.add('hidden');
+                document.getElementById('txMemberId').required = false;
+            } else {
+                memberSelectWrapper.classList.remove('hidden');
+                document.getElementById('txMemberId').required = true;
+            }
+
+            if (type === 'setoran') {
+                header.className = "bg-gradient-to-r from-green-600 to-green-700 text-white px-5 py-4 flex justify-between items-center";
+                title.innerText = "Setor Tabungan Anggota";
+                labelNominal.innerText = "Nominal Setoran Tabungan (Rp) *";
+                submitBtn.className = "flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-green-600/10 transition";
+            } else if (type === 'angsuran') {
+                header.className = "bg-gradient-to-r from-purple-600 to-purple-700 text-white px-5 py-4 flex justify-between items-center";
+                title.innerText = "Bayar Angsuran Pinjaman";
+                labelNominal.innerText = "Nominal Angsuran (Rp) *";
+                submitBtn.className = "flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-purple-600/10 transition";
+            } else if (type === 'pencairan') {
+                header.className = "bg-gradient-to-r from-amber-600 to-amber-700 text-white px-5 py-4 flex justify-between items-center";
+                title.innerText = "Pencairan Pinjaman Baru";
+                labelNominal.innerText = "Pokok Pinjaman (Rp) *";
+                tenorWrapper.classList.remove('hidden');
+                document.getElementById('txTenor').required = true;
+                submitBtn.className = "flex-1 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-amber-600/10 transition";
+            } else if (type === 'suntikan') {
+                header.className = "bg-gradient-to-r from-teal-600 to-teal-700 text-white px-5 py-4 flex justify-between items-center";
+                title.innerText = "Suntikan Kas Koperasi";
+                labelNominal.innerText = "Nominal Suntikan Kas (Rp) *";
+                submitBtn.className = "flex-1 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-teal-600/10 transition";
+            } else if (type === 'pengeluaran') {
+                header.className = "bg-gradient-to-r from-rose-600 to-rose-700 text-white px-5 py-4 flex justify-between items-center";
+                title.innerText = "Catat Pengeluaran Koperasi";
+                labelNominal.innerText = "Nominal Pengeluaran Kas (Rp) *";
+                submitBtn.className = "flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-rose-600/10 transition";
+            }
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeModalTransaction() {
+            document.getElementById('modalTransaction').classList.add('hidden');
+            document.getElementById('txMemberId').value = '';
+            document.getElementById('txAmount').value = '';
+            document.getElementById('txTenor').value = '';
+            document.getElementById('txInterest').value = '10';
+            document.getElementById('txNotes').value = '';
+            document.getElementById('wrapperPencairanSummary').classList.add('hidden');
+        }
+
+        function openModalMemberDetail(memberId) {
+            state.currentMemberSelected = memberId;
+            populateMemberDetail(memberId);
+            document.getElementById('modalMemberDetail').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function populateMemberDetail(memberId) {
+            const member = state.members.find(m => m.id === memberId);
+            if (!member) return;
+
+            document.getElementById('detName').innerText = member.name;
+            document.getElementById('detPhone').innerText = member.phone;
+            document.getElementById('detAddress').innerText = member.address;
+            document.getElementById('detSavings').innerText = formatRupiah(member.savings);
+            document.getElementById('detLoanOutstanding').innerText = formatRupiah(member.loanOutstanding);
+
+            const currentStatus = member.status || (member.loanOutstanding > 0 ? 'berjalan' : 'lancar');
+            document.getElementById('detStatusSelect').value = currentStatus;
+
+            const loanSection = document.getElementById('detLoanDetailSection');
+            if (member.loanOutstanding > 0) {
+                loanSection.classList.remove('hidden');
+                document.getElementById('detLoanTotal').innerText = formatRupiah(member.loanTotal);
+                document.getElementById('detLoanPaid').innerText = formatRupiah(member.loanPaid);
+                document.getElementById('detLoanInterest').innerText = `${member.loanInterest || 10}%`;
+
+                const dateText = member.loanDate ? new Date(member.loanDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A';
+                document.getElementById('detLoanDate').innerText = dateText;
+
+                const tTempo = member.loanTempo || 'harian';
+                const tTenor = member.loanTenor || 30;
+                const remTenor = member.loanRemainingTenor !== undefined ? member.loanRemainingTenor : tTenor;
+                const tempoLabel = tTempo === 'harian' ? 'Hari' : tTempo === 'mingguan' ? 'Minggu' : 'Bulan';
+
+                document.getElementById('detLoanRemainingTenor').innerText = `${remTenor} / ${tTenor} ${tempoLabel}`;
+                
+                const tempoFormatLabel = tTempo.charAt(0).toUpperCase() + tTempo.slice(1);
+                let detailTempoHtml = `
+                    <div class="flex justify-between py-1.5 border-t border-amber-100/50">
+                        <span class="text-slate-500">Skema Tempo & Tenor:</span>
+                        <span class="font-semibold text-slate-800">${tempoFormatLabel} (${tTenor} ${tTempo === 'harian' ? 'Hari' : tTempo === 'mingguan' ? 'Minggu' : 'Bulan'})</span>
+                    </div>
+                `;
+                
+                const oldTempoEl = document.getElementById('detTempoRow');
+                if (oldTempoEl) oldTempoEl.remove();
+                
+                const newRow = document.createElement('div');
+                newRow.id = 'detTempoRow';
+                newRow.innerHTML = detailTempoHtml;
+                loanSection.appendChild(newRow);
+            } else {
+                loanSection.classList.add('hidden');
+                const oldTempoEl = document.getElementById('detTempoRow');
+                if (oldTempoEl) oldTempoEl.remove();
+            }
+
+            const mutasiContainer = document.getElementById('detMutasiList');
+            if (mutasiContainer) {
+                mutasiContainer.innerHTML = '';
+                const memberTx = state.transactions.filter(tx => tx.memberId === memberId)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                if (memberTx.length === 0) {
+                    mutasiContainer.innerHTML = `<p class="text-[11px] text-center text-slate-400 py-4">Belum ada mutasi terdaftar.</p>`;
+                } else {
+                    memberTx.forEach(tx => {
+                        let badge = '';
+                        let val = '';
+                        if (tx.type === 'setoran') {
+                            badge = `<span class="text-green-600 font-semibold text-[10px]">Setor</span>`;
+                            val = `<span class="text-green-600 font-bold">+${formatRupiah(tx.amount)}</span>`;
+                        } else if (tx.type === 'angsuran') {
+                            badge = `<span class="text-purple-600 font-semibold text-[10px]">Angsur</span>`;
+                            val = `<span class="text-purple-600 font-bold">+${formatRupiah(tx.amount)}</span>`;
+                        } else if (tx.type === 'pencairan') {
+                            badge = `<span class="text-amber-600 font-semibold text-[10px]">Cair</span>`;
+                            val = `<span class="text-amber-600 font-bold">-${formatRupiah(tx.amount)}</span>`;
+                        } else if (tx.type === 'admin') {
+                            badge = `<span class="text-indigo-600 font-semibold text-[10px]">Admin</span>`;
+                            val = `<span class="text-indigo-600 font-bold">+${formatRupiah(tx.amount)}</span>`;
+                        }
+
+                        const row = document.createElement('div');
+                        row.className = "flex justify-between items-center p-2.5 hover:bg-slate-50";
+                        row.innerHTML = `
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    ${badge}
+                                    <span class="text-[10px] text-slate-400">${new Date(tx.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                                </div>
+                                ${tx.notes ? `<p class="text-[10px] text-slate-400 italic mt-0.5">${tx.notes}</p>` : ''}
+                            </div>
+                            ${val}
+                        `;
+                        mutasiContainer.appendChild(row);
+                    });
+                }
+            }
+        }
+
+        function closeModalMemberDetail() {
+            document.getElementById('modalMemberDetail').classList.add('hidden');
+            state.currentMemberSelected = null;
+        }
+
+        function openModalEditMember() {
+            if (!state.currentMemberSelected) return;
+            const member = state.members.find(m => m.id === state.currentMemberSelected);
+            if (!member) return;
+
+            document.getElementById('editMemberName').value = member.name || '';
+            document.getElementById('editMemberPhone').value = member.phone || '';
+            document.getElementById('editMemberAddress').value = member.address || '';
+
+            document.getElementById('modalEditMember').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeModalEditMember() {
+            document.getElementById('modalEditMember').classList.add('hidden');
+            document.getElementById('editMemberName').value = '';
+            document.getElementById('editMemberPhone').value = '';
+            document.getElementById('editMemberAddress').value = '';
+        }
+
+        async function handleFormEditMember(event) {
+            event.preventDefault();
+            if (!state.currentMemberSelected) return;
+
+            const name = document.getElementById('editMemberName').value.trim();
+            const phone = document.getElementById('editMemberPhone').value.trim();
+            const address = document.getElementById('editMemberAddress').value.trim();
+
+            if (!name || !phone || !address) {
+                showToast("Harap isi semua kolom dengan benar!", "error");
+                return;
+            }
+
+            try {
+                const memberRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', state.currentMemberSelected);
+                await updateDoc(memberRef, {
+                    name: name,
+                    phone: phone,
+                    address: address
+                });
+
+                closeModalEditMember();
+                showToast(`Data "${name}" berhasil diperbarui di Cloud!`);
+            } catch (err) {
+                console.error("Firestore Edit Member Error:", err);
+                showToast("Gagal memperbarui data di server cloud.", "error");
+            }
+        }
+
+        async function updateMemberStatus(statusValue) {
+            if (!state.currentMemberSelected) return;
+            try {
+                const memberRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', state.currentMemberSelected);
+                await updateDoc(memberRef, { status: statusValue });
+                showToast(`Status anggota diubah ke ${statusValue.toUpperCase()}`);
+            } catch (err) {
+                console.error("Gagal update status:", err);
+                showToast("Gagal menyimpan status ke server cloud.", "error");
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toastNotification');
+            const iconWrapper = document.getElementById('toastIconWrapper');
+            const msgSpan = document.getElementById('toastMessage');
+
+            if (!toast || !iconWrapper || !msgSpan) return;
+
+            msgSpan.innerText = message;
+
+            if (type === 'success') {
+                iconWrapper.className = "p-1 rounded-lg bg-green-500/10 text-green-400";
+                iconWrapper.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i>`;
+            } else if (type === 'error') {
+                iconWrapper.className = "p-1 rounded-lg bg-rose-500/10 text-rose-400";
+                iconWrapper.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4"></i>`;
+            }
+
+            lucide.createIcons();
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        async function handleFormAddMember(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('addMemberName').value.trim();
+            const phone = document.getElementById('addMemberPhone').value.trim();
+            const address = document.getElementById('addMemberAddress').value.trim();
+            const depositAmount = parseFloat(document.getElementById('addMemberInitialDeposit').value);
+
+            if (!name || !phone || !address || isNaN(depositAmount)) {
+                showToast("Harap isi semua kolom dengan benar!", "error");
+                return;
+            }
+
+            const newMemberId = 'm-' + Date.now();
+            const newMember = {
+                id: newMemberId,
+                name: name,
+                phone: phone,
+                address: address,
+                savings: depositAmount,
+                status: 'lancar',
+                loanOutstanding: 0,
+                loanPaid: 0,
+                loanTotal: 0,
+                loanTempo: 'harian',
+                loanTenor: 0,
+                loanRemainingTenor: 0,
+                loanInterest: 0,
+                loanPrincipal: 0,
+                loanDate: null
+            };
+
+            try {
+                // Tulis dokumen ke Firestore Cloud
+                const memberDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', newMemberId);
+                await setDoc(memberDocRef, newMember);
+
+                if (depositAmount > 0) {
+                    const txId = 'tx-' + Date.now();
+                    const newTx = {
+                        id: txId,
+                        memberId: newMemberId,
+                        type: 'setoran',
+                        amount: depositAmount,
+                        date: new Date().toISOString(),
+                        notes: 'Simpanan awal pendaftaran anggota'
+                    };
+                    const txDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'transactions', txId);
+                    await setDoc(txDocRef, newTx);
+                }
+
+                closeModalAddMember();
+                showToast(`Anggota "${name}" tersimpan di Cloud Database!`);
+            } catch (err) {
+                console.error("Firestore Add Error:", err);
+                showToast("Gagal menyimpan ke server database cloud.", "error");
+            }
+        }
+
+        async function handleFormTransaction(event) {
+            event.preventDefault();
+
+            const type = document.getElementById('txType').value;
+            const isCoopLevel = (type === 'suntikan' || type === 'pengeluaran');
+            const memberId = isCoopLevel ? 'koperasi' : document.getElementById('txMemberId').value;
+            const amount = parseFloat(document.getElementById('txAmount').value);
+            const notes = document.getElementById('txNotes').value.trim();
+            const txDateVal = document.getElementById('txDate').value;
+
+            if ((!isCoopLevel && !memberId) || isNaN(amount) || amount <= 0 || !txDateVal) {
+                showToast("Harap lengkapi semua data transaksi!", "error");
+                return;
+            }
+
+            let member = null;
+            if (!isCoopLevel) {
+                member = state.members.find(m => m.id === memberId);
+                if (!member) {
+                    showToast("Anggota tidak valid!", "error");
+                    return;
+                }
+            }
+
+            const transactionDate = new Date(txDateVal).toISOString();
+            const txId = 'tx-' + Date.now();
+
+            try {
+                if (type === 'setoran') {
+                    const newSavings = (member.savings || 0) + amount;
+                    const memberDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberId);
+                    await updateDoc(memberDocRef, { savings: newSavings });
+
+                    const newTx = {
+                        id: txId,
+                        memberId: memberId,
+                        type: 'setoran',
+                        amount: amount,
+                        date: transactionDate,
+                        notes: notes || 'Setoran tabungan harian'
+                    };
+                    const txDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'transactions', txId);
+                    await setDoc(txDocRef, newTx);
+
+                } else if (type === 'angsuran') {
+                    if (member.loanOutstanding <= 0) {
+                        showToast("Anggota ini tidak memiliki kewajiban pinjaman aktif!", "error");
+                        return;
+                    }
+                    if (amount > member.loanOutstanding) {
+                        showToast(`Nominal angsuran melebihi sisa pinjaman (${formatRupiah(member.loanOutstanding)})`, "error");
+                        return;
+                    }
+
+                    const newOutstanding = member.loanOutstanding - amount;
+                    const newPaid = (member.loanPaid || 0) + amount;
+                    
+                    let remTenor = member.loanRemainingTenor !== undefined ? member.loanRemainingTenor : (member.loanTenor || 30);
+                    if (remTenor > 0) remTenor -= 1;
+                    if (newOutstanding <= 0) remTenor = 0;
+
+                    const memberDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberId);
+                    await updateDoc(memberDocRef, {
+                        loanOutstanding: newOutstanding,
+                        loanPaid: newPaid,
+                        loanRemainingTenor: remTenor
+                    });
+
+                    const newTx = {
+                        id: txId,
+                        memberId: memberId,
+                        type: 'angsuran',
+                        amount: amount,
+                        date: transactionDate,
+                        notes: notes || 'Bayar angsuran'
+                    };
+                    const txDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'transactions', txId);
+                    await setDoc(txDocRef, newTx);
+
+                } else if (type === 'pencairan') {
+                    const stats = calculateStats();
+                    const netAmountToDisburse = amount * 0.90;
+
+                    if (netAmountToDisburse > stats.kas) {
+                        showToast("Maaf, kas koperasi saat ini tidak mencukupi untuk pencairan!", "error");
+                        return;
+                    }
+                    if (member.loanOutstanding > 0) {
+                        showToast("Anggota masih memiliki sisa pinjaman aktif yang belum lunas!", "error");
+                        return;
+                    }
+
+                    const tempo = document.getElementById('txTempo').value;
+                    const tenor = parseInt(document.getElementById('txTenor').value);
+                    const interestRate = parseFloat(document.getElementById('txInterest').value);
+
+                    if (isNaN(tenor) || tenor < 1) {
+                        showToast("Tenor minimal adalah 1!", "error");
+                        return;
+                    }
+                    if (isNaN(interestRate) || interestRate < 0) {
+                        showToast("Bunga minimal adalah 0%!", "error");
+                        return;
+                    }
+
+                    const adminFee = amount * 0.05;
+                    const savingsFee = amount * 0.05;
+                    const totalHarusBayar = Math.round((amount * (1 + (interestRate / 100))) / 1000) * 1000;
+
+                    const memberDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', memberId);
+                    await updateDoc(memberDocRef, {
+                        savings: (member.savings || 0) + savingsFee,
+                        loanOutstanding: totalHarusBayar,
+                        loanTotal: totalHarusBayar,
+                        loanPrincipal: amount,
+                        loanPaid: 0,
+                        loanTempo: tempo,
+                        loanTenor: tenor,
+                        loanRemainingTenor: tenor,
+                        loanInterest: interestRate,
+                        loanDate: transactionDate
+                    });
+
+                    const batch = writeBatch(db);
+                    
+                    const mainTx = {
+                        id: 'tx-p-' + txId + '-1',
+                        memberId: memberId,
+                        type: 'pencairan',
+                        amount: amount,
+                        date: transactionDate,
+                        notes: notes || `Pencairan pinjaman (Gross: ${formatRupiah(amount)}, Bersih: ${formatRupiah(netAmountToDisburse)})`
+                    };
+                    batch.set(doc(db, 'artifacts', appId, 'public', 'data', 'transactions', mainTx.id), mainTx);
+
+                    const savingsTx = {
+                        id: 'tx-s-' + txId + '-2',
+                        memberId: memberId,
+                        type: 'setoran',
+                        amount: savingsFee,
+                        date: transactionDate,
+                        notes: `Potongan Tabungan 5% dari Pencairan Pinjaman`
+                    };
+                    batch.set(doc(db, 'artifacts', appId, 'public', 'data', 'transactions', savingsTx.id), savingsTx);
+
+                    const adminTx = {
+                        id: 'tx-a-' + txId + '-3',
+                        memberId: memberId,
+                        type: 'admin',
+                        amount: adminFee,
+                        date: transactionDate,
+                        notes: `Potongan Admin 5% dari Pencairan Pinjaman`
+                    };
+                    batch.set(doc(db, 'artifacts', appId, 'public', 'data', 'transactions', adminTx.id), adminTx);
+
+                    await batch.commit();
+
+                } else if (type === 'suntikan') {
+                    const newTx = {
+                        id: txId,
+                        memberId: 'koperasi',
+                        type: 'suntikan',
+                        amount: amount,
+                        date: transactionDate,
+                        notes: notes || 'Suntikan dana modal kas koperasi'
+                    };
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'transactions', txId), newTx);
+
+                } else if (type === 'pengeluaran') {
+                    const stats = calculateStats();
+                    if (amount > stats.kas) {
+                        showToast("Maaf, kas koperasi tidak mencukupi untuk pengeluaran operasional!", "error");
+                        return;
+                    }
+
+                    const newTx = {
+                        id: txId,
+                        memberId: 'koperasi',
+                        type: 'pengeluaran',
+                        amount: amount,
+                        date: transactionDate,
+                        notes: notes || 'Pengeluaran kas operasional'
+                    };
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'transactions', txId), newTx);
+                }
+
+                closeModalTransaction();
+                showToast("Transaksi berhasil disimpan ke Cloud!");
+            } catch (err) {
+                console.error("Gagal merekam transaksi:", err);
+                showToast("Gagal menyimpan transaksi ke server cloud.", "error");
+            }
+        }
+
+        function triggerDeleteMember() {
+            if (!state.currentMemberSelected) return;
+
+            const member = state.members.find(m => m.id === state.currentMemberSelected);
+            if (!member) return;
+
+            let warningText = "";
+            // Mengubah hard-block menjadi peringatan informatif agar anggota dengan pinjaman tetap bisa dihapus jika terdesak
+            if (member.loanOutstanding > 0) {
+                warningText = ` <br><span class="text-rose-600 font-bold block mt-2 p-1.5 bg-rose-50 border border-rose-100 rounded-lg">⚠️ PERHATIAN: Anggota ini masih memiliki sisa pinjaman sebesar ${formatRupiah(member.loanOutstanding)}.</span>`;
+            }
+
+            document.getElementById('confirmDeleteMessage').innerHTML = `Apakah Anda yakin ingin menghapus data anggota <strong>"${member.name}"</strong>? Seluruh data profil dan histori transaksi terkait akan dihapus permanen dari Cloud.${warningText}`;
+            document.getElementById('modalConfirmDelete').classList.remove('hidden');
+        }
+
+        function closeModalConfirmDelete() {
+            document.getElementById('modalConfirmDelete').classList.add('hidden');
+        }
+
+        async function executeDeleteMember() {
+            if (!state.currentMemberSelected) return;
+
+            const member = state.members.find(m => m.id === state.currentMemberSelected);
+            if (!member) {
+                closeModalConfirmDelete();
+                return;
+            }
+
+            try {
+                // Menghapus dokumen anggota utama dari Firestore Cloud
+                const memberDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'members', state.currentMemberSelected);
+                await deleteDoc(memberDocRef);
+
+                // Mengambil semua riwayat transaksi yang terikat dengan ID anggota ini
+                const matchingTxs = state.transactions.filter(tx => tx.memberId === state.currentMemberSelected);
+                
+                // CRITICAL FIX: Hanya jalankan batch commit apabila anggota memiliki riwayat transaksi agar tidak terjadi error pada batch kosong
+                if (matchingTxs.length > 0) {
+                    const batch = writeBatch(db);
+                    matchingTxs.forEach(tx => {
+                        batch.delete(doc(db, 'artifacts', appId, 'public', 'data', 'transactions', tx.id));
+                    });
+                    await batch.commit();
+                }
+
+                closeModalConfirmDelete();
+                closeModalMemberDetail();
+                showToast(`Data "${member.name}" berhasil dihapus dari Cloud.`);
+            } catch (err) {
+                console.error("Gagal menghapus anggota:", err);
+                // Menampilkan detail error yang dialami agar mudah dilacak
+                showToast(`Gagal menghapus: ${err.message || err}`, "error");
+            }
+        }
+
+        function triggerResetAllData() {
+            document.getElementById('modalConfirmResetAll').classList.remove('hidden');
+        }
+
+        function closeModalConfirmResetAll() {
+            document.getElementById('modalConfirmResetAll').classList.add('hidden');
+        }
+
+        async function executeResetAllData() {
+            try {
+                const batch = writeBatch(db);
+                state.members.forEach(m => {
+                    batch.delete(doc(db, 'artifacts', appId, 'public', 'data', 'members', m.id));
+                });
+                state.transactions.forEach(tx => {
+                    batch.delete(doc(db, 'artifacts', appId, 'public', 'data', 'transactions', tx.id));
+                });
+                await batch.commit();
+
+                closeModalConfirmResetAll();
+                switchTab('beranda');
+                showToast("Semua database cloud berhasil dikosongkan!", "success");
+            } catch (err) {
+                console.error("Gagal reset data:", err);
+                showToast("Gagal mengosongkan database server.", "error");
+            }
+        }
+
+        let financialChartInstance = null;
+
+        function initializeChart() {
+            const ctxCanvas = document.getElementById('financialChart');
+            if (!ctxCanvas) return;
+            const ctx = ctxCanvas.getContext('2d');
+            const stats = calculateStats();
+
+            if (financialChartInstance) {
+                financialChartInstance.destroy();
+            }
+
+            const setoranData = stats.setoranHariIni || 0;
+            const angsuranData = stats.angsuranHariIni || 0;
+            const pencairanData = stats.pencairanHariIni || 0;
+            const adminData = stats.adminHariIni || 0;
+            const suntikanData = stats.suntikanHariIni || 0;
+            const pengeluaranData = stats.pengeluaranHariIni || 0;
+
+            financialChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Setoran Tabungan', 'Angsuran Masuk', 'Pencairan Keluar', 'Pendapatan Admin', 'Suntikan Kas', 'Pengeluaran'],
+                    datasets: [{
+                        data: [setoranData, angsuranData, pencairanData, adminData, suntikanData, pengeluaranData],
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.85)',   
+                            'rgba(147, 51, 234, 0.85)',  
+                            'rgba(245, 158, 11, 0.85)',  
+                            'rgba(99, 102, 241, 0.85)',  
+                            'rgba(13, 148, 136, 0.85)',  
+                            'rgba(225, 29, 72, 0.85)'    
+                        ],
+                        borderColor: [
+                            '#ffffff',
+                            '#ffffff',
+                            '#ffffff',
+                            '#ffffff',
+                            '#ffffff',
+                            '#ffffff'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 10,
+                                font: {
+                                    family: 'Plus Jakarta Sans',
+                                    size: 9,
+                                    weight: '600'
+                                },
+                                padding: 8
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+
+        function simulateExport() {
+            showToast("Memproses data laporan...");
+            
+            setTimeout(() => {
+                const stats = calculateStats();
+                const textData = `
+LAPORAN HARIAN KOPERASI SEJAHTERA (CLOUD VERSION)
+--------------------------------------------------
+Tanggal: ${new Date().toLocaleDateString('id-ID')}
+Target Angsuran: ${formatRupiah(stats.target)}
+--------------------------------------------------
+1. TOTAL SETORAN MASUK    : ${formatRupiah(stats.setoranHariIni)}
+2. TOTAL ANGSURAN MASUK   : ${formatRupiah(stats.angsuranHariIni)}
+3. TOTAL PENDAPATAN ADMIN  : ${formatRupiah(stats.adminHariIni)}
+4. TOTAL SUNTIKAN KAS     : ${formatRupiah(stats.suntikanHariIni)}
+5. TOTAL PENCAIRAN        : ${formatRupiah(stats.pencairanHariIni)}
+6. TOTAL PENGELUARAN KAS  : ${formatRupiah(stats.pengeluaranHariIni)}
+--------------------------------------------------
+SALDO KAS SAAT INI (SIAP) : ${formatRupiah(stats.kas)}
+TOTAL TABUNGAN ANGGOTA   : ${formatRupiah(stats.savings)}
+POKOK PINJAMAN (MODAL)   : ${formatRupiah(stats.principalOutstanding)}
+TOTAL TAGIHAN + BUNGA    : ${formatRupiah(stats.outstanding)}
+--------------------------------------------------
+Laporan Berhasil Diekspor Dari Cloud.
+                `;
+                
+                const blob = new Blob([textData], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Laporan_Koperasi_Harian_Cloud_${new Date().toISOString().split('T')[0]}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showToast("Laporan berhasil diunduh!", "success");
+            }, 1000);
+        }
+
+        window.switchTab = switchTab;
+        window.openModalAddMember = openModalAddMember;
+        window.closeModalAddMember = closeModalAddMember;
+        window.openModalEditMember = openModalEditMember;
+        window.closeModalEditMember = closeModalEditMember;
+        window.openModalTransaction = openModalTransaction;
+        window.closeModalTransaction = closeModalTransaction;
+        window.openModalMemberDetail = openModalMemberDetail;
+        window.closeModalMemberDetail = closeModalMemberDetail;
+        window.updateMemberStatus = updateMemberStatus;
+        window.triggerDeleteMember = triggerDeleteMember;
+        window.closeModalConfirmDelete = closeModalConfirmDelete;
+        window.executeDeleteMember = executeDeleteMember;
+        window.triggerResetAllData = triggerResetAllData;
+        window.closeModalConfirmResetAll = closeModalConfirmResetAll;
+        window.executeResetAllData = executeResetAllData;
+        window.filterTransactionType = filterTransactionType;
+        window.simulateExport = simulateExport;
+        window.renderMemberList = renderMemberList;
+        window.updateLivePencairanSummary = updateLivePencairanSummary;
+
+        // Pendaftaran submit form handler
+        const addMemForm = document.getElementById('formAddMember');
+        if (addMemForm) addMemForm.addEventListener('submit', handleFormAddMember);
+
+        const editMemForm = document.getElementById('formEditMember');
+        if (editMemForm) editMemForm.addEventListener('submit', handleFormEditMember);
+
+        const txForm = document.getElementById('formTransaction');
+        if (txForm) txForm.addEventListener('submit', handleFormTransaction);
+
+    </script>
+</body>
+</html>
